@@ -10,6 +10,10 @@ Cyron AI is a futuristic AI interface designed with a sleek, interactive design,
 ## Demo
 Check out the live demo: [Cyron AI](https://your-username.github.io/Cyron-AI/)
 
+## Socials
+Twitter: https://x.com/Cyron_AI
+Telegram: https://t.me/CyronAI
+
 ## Installation
 1. Clone the repository:
    ```bash
