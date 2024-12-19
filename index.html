@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyron AI</title>
+    <style>
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        @keyframes typingEffect {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 45px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+        }
+
+        .form-container {
+            border: 1px solid #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .form-container {
+                width: 500px; /* Expand width on tablets */
+                padding: 30px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .form-container {
+                width: 600px; /* Expand width on desktops */
+                padding: 40px;
+            }
+        }
+
+        .typing-cursor {
+            border-right: 2px solid #00ff00;
+            animation: blink 0.8s step-end infinite;
+        }
+
+        input, button {
+            background-color: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            width: calc(100% - 24px);
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: #007700;
+        }
+
+        input:focus, button:hover {
+            outline: none;
+            background-color: #001f00;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .output {
+            margin-top: 15px;
+            border-top: 1px solid #00ff00;
+            padding-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .typing-output {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            font-size: 1em;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #00ff00;
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.2);
+        }
+
+        @media (min-width: 768px) {
+            .form-container {
+                width: 500px;
+                padding: 30px;
+            }
+
+            img {
+                max-width: 400px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .form-container {
+                width: 800px;
+                padding: 40px;
+            }
+
+            img {
+                max-width: 500px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+    <div class="form-container">
+        <img src="./images/cyron1.png" alt="Cyron AI Image">
+        <h2 id="title">Cyron AI<span class="typing-cursor"></span></h2>
+        <p id="description"></p>
+        <form id="aiForm">
+            <input type="text" id="userInput" placeholder="Ask me something..." required>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="output" id="output"></div>
+        <div class="social-icons">
+            <a href="https://x.com/Cyron_AI" target="_blank" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://telegram.org" target="_blank" aria-label="Telegram">
+                <i class="fab fa-telegram"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const descriptionText = `Cyron is an advanced AI designed to manage complex systems and process data in real time. Featuring a sleek alloy body with glowing blue circuits, Cyron operates as a command hub in futuristic cities. Its core capabilities include situational analysis, risk prediction, and assisting humans in making critical decisions. Notably, Cyron stands out with its self-learning AI, enabling it to adapt quickly to any environment.`;
+        const descriptionElement = document.getElementById('description');
+        const cursor = document.querySelector('.typing-cursor');
+
+        let currentWord = 0;
+        let words = descriptionText.split(' ');
+
+        function typeNextWord() {
+            if (currentWord < words.length) {
+                descriptionElement.innerHTML += words[currentWord] + ' ';
+                currentWord++;
+                setTimeout(typeNextWord, 200); // Adjust typing speed here
+            } else {
+                cursor.style.display = 'none';
+            }
+        }
+
+        // Start typing effect after the page loads
+        window.onload = () => {
+            typeNextWord();
+        };
+
+        const form = document.getElementById('aiForm');
+        const output = document.getElementById('output');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInput = document.getElementById('userInput').value;
+            output.innerHTML = `<span class="typing-output"></span>`;
+
+            try {
+                const response = await fetch('proxy.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: userInput,
+                        max_tokens: 100,
+                    }),
+                });
+
+                const data = await response.json();
+                const reply = data.choices[0].text.trim();
+
+                // Apply typing effect to the response
+                const typingOutputElement = document.querySelector('.typing-output');
+                let charIndex = 0;
+
+                function typeLetterByLetter() {
+                    if (charIndex < reply.length) {
+                        typingOutputElement.textContent += reply[charIndex];
+                        charIndex++;
+                        setTimeout(typeLetterByLetter, 50); // Adjust typing speed here
+                    }
+                }
+
+                typeLetterByLetter();
+
+            } catch (error) {
+                output.innerHTML = `<span class="typing-output">Error: Unable to fetch response</span>`;
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
